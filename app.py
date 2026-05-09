@@ -7,6 +7,7 @@ st.set_page_config(
     layout="centered",
 )
 
+# ── כל ה-CSS בהתחלה לפני הכל ─────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
@@ -17,6 +18,16 @@ st.markdown("""
 }
 [data-testid="stSidebarNav"] { direction: rtl; }
 .block-container { padding-top: 2rem !important; }
+
+/* הסתר כפתורי Streamlit */
+[data-testid="stButton-btn1"],
+[data-testid="stButton-btn2"],
+[data-testid="stButton-btn3"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -41,66 +52,48 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Streamlit buttons (hidden) for navigation ─────────────────────────────────
+# ── כפתורי Streamlit נסתרים לניווט ───────────────────────────────────────────
 col1, col2, col3 = st.columns([1, 4, 1])
 with col2:
     btn1 = st.button("ניהול נתונים", key="btn1", use_container_width=True)
     btn2 = st.button("יצירת לוח אימונים", key="btn2", use_container_width=True)
     btn3 = st.button("לוח האימונים השבועי", key="btn3", use_container_width=True)
 
-if btn1:
-    st.switch_page("pages/1_Manage_Data.py")
-if btn2:
-    st.switch_page("pages/2_Optimization.py")
-if btn3:
-    st.switch_page("pages/3_Schedule.py")
+if btn1: st.switch_page("pages/1_Manage_Data.py")
+if btn2: st.switch_page("pages/2_Optimization.py")
+if btn3: st.switch_page("pages/3_Schedule.py")
 
-# ── Style: hide real buttons, show beautiful HTML ones ───────────────────────
+# ── כפתורי HTML יפים ─────────────────────────────────────────────────────────
 st.markdown("""
-<style>
-/* הסתר את כפתורי Streamlit */
-[data-testid="stButton-btn1"],
-[data-testid="stButton-btn2"],
-[data-testid="stButton-btn3"] {
-    display: none !important;
-}
-</style>
-
-<div style='max-width:600px; margin:0 auto; padding:0 16px;'>
+<div style='max-width:560px; margin:-20px auto 0; padding:0 8px;'>
 
 <button onclick="document.querySelector('[data-testid=stButton-btn1] button').click()"
-style="
-    width:100%; height:90px; border-radius:16px; border:none;
-    background:#ff6b6b; color:#ffffff;
-    font-family:'Heebo',sans-serif; font-size:30px; font-weight:700;
-    margin-bottom:14px; cursor:pointer; display:block;
-    transition: filter 0.15s;
-" onmouseover="this.style.filter='brightness(0.9)'"
-   onmouseout="this.style.filter='brightness(1)'">
+style="width:100%;height:90px;border-radius:16px;border:none;
+background:#ff6b6b;color:#ffffff;
+font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
+margin-bottom:14px;cursor:pointer;display:block;"
+onmouseover="this.style.filter='brightness(0.9)'"
+onmouseout="this.style.filter='brightness(1)'">
 ⚙️ &nbsp; ניהול נתונים
 </button>
 
 <button onclick="document.querySelector('[data-testid=stButton-btn2] button').click()"
-style="
-    width:100%; height:90px; border-radius:16px; border:none;
-    background:#d90429; color:#ffffff;
-    font-family:'Heebo',sans-serif; font-size:30px; font-weight:700;
-    margin-bottom:14px; cursor:pointer; display:block;
-    transition: filter 0.15s;
-" onmouseover="this.style.filter='brightness(0.9)'"
-   onmouseout="this.style.filter='brightness(1)'">
+style="width:100%;height:90px;border-radius:16px;border:none;
+background:#d90429;color:#ffffff;
+font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
+margin-bottom:14px;cursor:pointer;display:block;"
+onmouseover="this.style.filter='brightness(0.9)'"
+onmouseout="this.style.filter='brightness(1)'">
 📅 &nbsp; יצירת לוח אימונים
 </button>
 
 <button onclick="document.querySelector('[data-testid=stButton-btn3] button').click()"
-style="
-    width:100%; height:90px; border-radius:16px; border:none;
-    background:#7f0014; color:#ffffff;
-    font-family:'Heebo',sans-serif; font-size:30px; font-weight:700;
-    margin-bottom:14px; cursor:pointer; display:block;
-    transition: filter 0.15s;
-" onmouseover="this.style.filter='brightness(0.9)'"
-   onmouseout="this.style.filter='brightness(1)'">
+style="width:100%;height:90px;border-radius:16px;border:none;
+background:#7f0014;color:#ffffff;
+font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
+margin-bottom:14px;cursor:pointer;display:block;"
+onmouseover="this.style.filter='brightness(0.9)'"
+onmouseout="this.style.filter='brightness(1)'">
 📋 &nbsp; לוח האימונים השבועי
 </button>
 
