@@ -11,9 +11,8 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { font-family: 'Heebo', sans-serif !important; }
-
 .main, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-    background: #ffffff;
+    background: #ffffff !important;
     direction: rtl;
 }
 [data-testid="stSidebarNav"] { direction: rtl; }
@@ -27,7 +26,8 @@ with col_b:
     if os.path.exists("logo.png"):
         st.image("logo.png", use_container_width=True)
     else:
-        st.markdown("<div style='text-align:center;font-size:80px;'>🤾</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center;font-size:80px;'>🤾</div>",
+                    unsafe_allow_html=True)
 
 # ── Titles ────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -41,74 +41,46 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Buttons – כולם דרך HTML ───────────────────────────────────────────────────
-BTN_STYLE = """
-    display: block;
-    width: 100%;
-    padding: 28px 20px;
-    border-radius: 16px;
-    font-family: 'Heebo', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    text-align: center;
-    text-decoration: none;
-    margin-bottom: 16px;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.15s;
-"""
-
+# ── Buttons ───────────────────────────────────────────────────────────────────
 col1, col2, col3 = st.columns([1, 4, 1])
 with col2:
-    # כפתור 1 – לבן
-    if st.button("⚙️  ניהול נתונים", use_container_width=True):
+    if st.button("⚙️  ניהול נתונים", use_container_width=True, key="btn1"):
         st.switch_page("pages/1_Manage_Data.py")
 
-    # כפתור 2 – אדום
-    if st.button("📅  יצירת לוח אימונים", use_container_width=True):
+    if st.button("📅  יצירת לוח אימונים", use_container_width=True, key="btn2"):
         st.switch_page("pages/2_Optimization.py")
 
-    # כפתור 3 – כהה
-    if st.button("📋  לוח האימונים השבועי", use_container_width=True):
+    if st.button("📋  לוח האימונים השבועי", use_container_width=True, key="btn3"):
         st.switch_page("pages/3_Schedule.py")
 
+# ── Styling by key ────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* כל הכפתורים – בסיס אחיד */
-div[data-testid="stVerticalBlock"] .stButton > button {
+/* בסיס לכל הכפתורים */
+button[kind="secondary"] {
     width: 100% !important;
     height: 90px !important;
     border-radius: 16px !important;
-    font-size: 26px !important;
+    font-size: 30px !important;
     font-weight: 700 !important;
     margin-bottom: 12px !important;
-    border: 2px solid #e2e8f0 !important;
-    background: #ffffff;
-    
-}
-
-/* כפתור ראשון – אדום בהיר */
-div[data-testid="stVerticalBlock"] .stButton:nth-child(1) > button {
-    background: #FFF5EE !important;
-    color: #ffffff !important;
     border: none !important;
-    font-size: 32px !important;
-}
-
-/* כפתור שני – אדום בינוני */
-div[data-testid="stVerticalBlock"] .stButton:nth-child(2) > button {
-    background: #CD5C5C !important;
     color: #ffffff !important;
-    border: none !important;
-    font-size: 32px !important;
 }
 
-/* כפתור שלישי – אדום כהה */
-div[data-testid="stVerticalBlock"] .stButton:nth-child(3) > button {
+/* כפתור 1 – אדום בהיר */
+[data-testid="stButton-btn1"] button {
+    background: #ff6b6b !important;
+}
+
+/* כפתור 2 – אדום בינוני */
+[data-testid="stButton-btn2"] button {
+    background: #d90429 !important;
+}
+
+/* כפתור 3 – אדום כהה */
+[data-testid="stButton-btn3"] button {
     background: #7f0014 !important;
-    color: #ffffff !important;
-    border: none !important;
-    font-size: 32px !important;
 }
 </style>
 """, unsafe_allow_html=True)
