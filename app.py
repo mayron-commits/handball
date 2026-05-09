@@ -87,18 +87,28 @@ div[data-testid="stVerticalBlock"] .stButton > button {
     color: #0f172a !important;
 }
 
-/* כפתור אדום – השני */
+/* כפתור ראשון – אדום בהיר */
+div[data-testid="stVerticalBlock"] .stButton:nth-child(1) > button {
+    background: #ff6b6b !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-size: 32px !important;
+}
+
+/* כפתור שני – אדום בינוני */
 div[data-testid="stVerticalBlock"] .stButton:nth-child(2) > button {
     background: #d90429 !important;
     color: #ffffff !important;
     border: none !important;
+    font-size: 32px !important;
 }
 
-/* כפתור כהה – השלישי */
+/* כפתור שלישי – אדום כהה */
 div[data-testid="stVerticalBlock"] .stButton:nth-child(3) > button {
-    background: #0f172a !important;
+    background: #7f0014 !important;
     color: #ffffff !important;
     border: none !important;
+    font-size: 32px !important;
 }
 </style>
 """, unsafe_allow_html=True)
