@@ -7,26 +7,92 @@ st.set_page_config(
     layout="centered",
 )
 
-# ── כל ה-CSS בהתחלה לפני הכל ─────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
+
 * { font-family: 'Heebo', sans-serif !important; }
-.main, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-    background: #ffffff !important;
+
+.main, .stApp {
     direction: rtl;
+    text-align: right;
+    background: #ffffff;
 }
 [data-testid="stSidebarNav"] { direction: rtl; }
-.block-container { padding-top: 2rem !important; }
+[data-testid="stAppViewContainer"] { background: #ffffff; }
+[data-testid="stHeader"] { background: #ffffff; }
 
-/* הסתר כפתורי Streamlit */
-[data-testid="stButton-btn1"],
-[data-testid="stButton-btn2"],
-[data-testid="stButton-btn3"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    overflow: hidden !important;
+.block-container {
+    padding-top: 2rem !important;
+    max-width: 700px !important;
+    margin: auto !important;
+}
+
+.home-title-sub {
+    font-size: 20px;
+    font-weight: 700;
+    color: #64748b;
+    text-align: center;
+    margin-bottom: 4px;
+    margin-top: 16px;
+}
+.home-title-main {
+    font-size: 40px;
+    font-weight: 900;
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 48px;
+    line-height: 1.2;
+}
+
+/* ── כפתורים אחידים לחלוטין ── */
+.stButton > button {
+    width: 100% !important;
+    border-radius: 16px !important;
+    height: 110px !important;
+    font-family: 'Heebo', sans-serif !important;
+    font-size: 26px !important;
+    font-weight: 700 !important;
+    border: none !important;
+    transition: all 0.15s ease !important;
+    margin-bottom: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* כפתור 1 – לבן */
+div[data-testid="stVerticalBlock"] > div:nth-child(3) .stButton > button {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 2px solid #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+div[data-testid="stVerticalBlock"] > div:nth-child(3) .stButton > button:hover {
+    border-color: #d90429 !important;
+    color: #d90429 !important;
+}
+
+/* כפתור 2 – אדום */
+div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button {
+    background: #d90429 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(217,4,41,0.35) !important;
+}
+div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button:hover {
+    background: #b80222 !important;
+    color: #ffffff !important;
+}
+
+/* כפתור 3 – כהה */
+div[data-testid="stVerticalBlock"] > div:nth-child(5) .stButton > button {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2) !important;
+}
+div[data-testid="stVerticalBlock"] > div:nth-child(5) .stButton > button:hover {
+    background: #1e293b !important;
+    color: #ffffff !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -37,65 +103,24 @@ with col_b:
     if os.path.exists("logo.png"):
         st.image("logo.png", use_container_width=True)
     else:
-        st.markdown("<div style='text-align:center;font-size:80px;'>🤾</div>",
-                    unsafe_allow_html=True)
+        st.markdown(
+            "<div style='text-align:center; font-size:80px;'>🤾</div>",
+            unsafe_allow_html=True,
+        )
 
 # ── Titles ────────────────────────────────────────────────────────────────────
-st.markdown("""
-<div style='text-align:center; margin-top:16px; margin-bottom:48px;'>
-    <div style='font-size:20px; font-weight:700; color:#64748b; margin-bottom:6px;'>
-        הפועל ראשון לציון
-    </div>
-    <div style='font-size:40px; font-weight:900; color:#0f172a; line-height:1.2;'>
-        מערכת חכמה לשיבוץ אימונים
-    </div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    "<div class='home-title-sub'>הפועל ראשון לציון</div>"
+    "<div class='home-title-main'>מערכת חכמה לשיבוץ אימונים</div>",
+    unsafe_allow_html=True,
+)
 
-# ── כפתורי Streamlit נסתרים לניווט ───────────────────────────────────────────
-col1, col2, col3 = st.columns([1, 4, 1])
-with col2:
-    btn1 = st.button("ניהול נתונים", key="btn1", use_container_width=True)
-    btn2 = st.button("יצירת לוח אימונים", key="btn2", use_container_width=True)
-    btn3 = st.button("לוח האימונים השבועי", key="btn3", use_container_width=True)
+# ── Buttons ───────────────────────────────────────────────────────────────────
+if st.button("⚙️   ניהול נתונים", use_container_width=True):
+    st.switch_page("pages/1_Manage_Data.py")
 
-if btn1: st.switch_page("pages/1_Manage_Data.py")
-if btn2: st.switch_page("pages/2_Optimization.py")
-if btn3: st.switch_page("pages/3_Schedule.py")
+if st.button("📅   יצירת לוח אימונים", use_container_width=True):
+    st.switch_page("pages/2_Optimization.py")
 
-# ── כפתורי HTML יפים ─────────────────────────────────────────────────────────
-st.markdown("""
-<div style='max-width:560px; margin:-20px auto 0; padding:0 8px;'>
-
-<button onclick="document.querySelector('[data-testid=stButton-btn1] button').click()"
-style="width:100%;height:90px;border-radius:16px;border:none;
-background:#ff6b6b;color:#ffffff;
-font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
-margin-bottom:14px;cursor:pointer;display:block;"
-onmouseover="this.style.filter='brightness(0.9)'"
-onmouseout="this.style.filter='brightness(1)'">
-⚙️ &nbsp; ניהול נתונים
-</button>
-
-<button onclick="document.querySelector('[data-testid=stButton-btn2] button').click()"
-style="width:100%;height:90px;border-radius:16px;border:none;
-background:#d90429;color:#ffffff;
-font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
-margin-bottom:14px;cursor:pointer;display:block;"
-onmouseover="this.style.filter='brightness(0.9)'"
-onmouseout="this.style.filter='brightness(1)'">
-📅 &nbsp; יצירת לוח אימונים
-</button>
-
-<button onclick="document.querySelector('[data-testid=stButton-btn3] button').click()"
-style="width:100%;height:90px;border-radius:16px;border:none;
-background:#7f0014;color:#ffffff;
-font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;
-margin-bottom:14px;cursor:pointer;display:block;"
-onmouseover="this.style.filter='brightness(0.9)'"
-onmouseout="this.style.filter='brightness(1)'">
-📋 &nbsp; לוח האימונים השבועי
-</button>
-
-</div>
-""", unsafe_allow_html=True)
+if st.button("📋   לוח האימונים השבועי", use_container_width=True):
+    st.switch_page("pages/3_Schedule.py")
