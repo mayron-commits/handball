@@ -54,7 +54,7 @@ st.markdown("""
 .stButton > button {
     width: 100% !important;
     border-radius: 18px !important;
-    height: 100px !important;
+    height: 120px !important;
     font-family: 'Heebo', sans-serif !important;
     font-size: 28px !important;
     font-weight: 700 !important;
