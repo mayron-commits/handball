@@ -84,7 +84,7 @@ div[data-testid="stVerticalBlock"] .stButton > button {
     margin-bottom: 12px !important;
     border: 2px solid #e2e8f0 !important;
     background: #ffffff !important;
-    color: #0f172a !important;
+    
 }
 
 /* כפתור ראשון – אדום בהיר */
