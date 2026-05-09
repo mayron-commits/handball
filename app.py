@@ -89,7 +89,7 @@ div[data-testid="stVerticalBlock"] .stButton > button {
 
 /* כפתור ראשון – אדום בהיר */
 div[data-testid="stVerticalBlock"] .stButton:nth-child(1) > button {
-    background: #ff6b6b !important;
+    background: #FFF5EE !important;
     color: #ffffff !important;
     border: none !important;
     font-size: 32px !important;
@@ -97,7 +97,7 @@ div[data-testid="stVerticalBlock"] .stButton:nth-child(1) > button {
 
 /* כפתור שני – אדום בינוני */
 div[data-testid="stVerticalBlock"] .stButton:nth-child(2) > button {
-    background: #d90429 !important;
+    background: #CD5C5C !important;
     color: #ffffff !important;
     border: none !important;
     font-size: 32px !important;
