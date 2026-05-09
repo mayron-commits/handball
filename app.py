@@ -52,36 +52,34 @@ st.markdown("""
     justify-content: center;
 }
 .stButton > button {
-    width: 200% !important;
+    width: 150% !important;
     border-radius: 18px !important;
     height: 120px !important;
     font-family: 'Heebo', sans-serif !important;
-    font-size: 34px !important;
+    font-size: 28px !important;
     font-weight: 700 !important;
-    border: 2px solid #e2e8f0 !important;
-    background: #ffffff !important;
-    color: #0f172a !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15) !important;
     transition: all 0.15s ease !important;
     margin-bottom: 14px !important;
 }
-.stButton > button:hover {
-    border-color: #d90429 !important;
-    color: #d90429 !important;
-    box-shadow: 0 4px 16px rgba(217,4,41,0.15) !important;
-    transform: translateY(-1px) !important;
+
+/* כפתור ראשון – לבן */
+div[data-testid="stVerticalBlock"] > div:nth-child(3) .stButton > button {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 2px solid #e2e8f0 !important;
 }
 
-/* כפתור אדום – יצירת לוח */
+/* כפתור שני – אדום */
 div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button {
     background: #d90429 !important;
     color: #ffffff !important;
-    border: none !important;
-    box-shadow: 0 6px 24px rgba(217,4,41,0.4) !important;
-    font-size: 30px !important;
 }
-div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button:hover {
-    background: #b80222 !important;
+
+/* כפתור שלישי – כהה */
+div[data-testid="stVerticalBlock"] > div:nth-child(5) .stButton > button {
+    background: #0f172a !important;
     color: #ffffff !important;
 }
 
