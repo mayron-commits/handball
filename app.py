@@ -51,7 +51,7 @@ st.markdown("""
     border-radius: 16px !important;
     height: 110px !important;
     font-family: 'Heebo', sans-serif !important;
-    font-size: 34px !important;
+    font-size: 40px !important;
     font-weight: 700 !important;
     border: none !important;
     transition: all 0.15s ease !important;
