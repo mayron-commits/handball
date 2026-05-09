@@ -52,11 +52,11 @@ st.markdown("""
     justify-content: center;
 }
 .stButton > button {
-    width: 150% !important;
+    width: 200% !important;
     border-radius: 18px !important;
     height: 120px !important;
     font-family: 'Heebo', sans-serif !important;
-    font-size: 28px !important;
+    font-size: 34px !important;
     font-weight: 700 !important;
     border: 2px solid #e2e8f0 !important;
     background: #ffffff !important;
