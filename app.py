@@ -62,9 +62,7 @@ st.markdown("""
 [data-testid="stButton-btn1"],
 [data-testid="stButton-btn2"],
 [data-testid="stButton-btn3"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
+    display: none !important;
 }
 </style>
 
