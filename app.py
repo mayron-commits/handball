@@ -52,7 +52,7 @@ st.markdown("""
     justify-content: center;
 }
 .stButton > button {
-    width: 100% !important;
+    width: 150% !important;
     border-radius: 18px !important;
     height: 120px !important;
     font-family: 'Heebo', sans-serif !important;
