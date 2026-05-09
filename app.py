@@ -13,7 +13,7 @@ st.markdown("""
 * { font-family: 'Heebo', sans-serif !important; }
 
 .main, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-    background: #ffffff !important;
+    background: #ffffff;
     direction: rtl;
 }
 [data-testid="stSidebarNav"] { direction: rtl; }
@@ -83,7 +83,7 @@ div[data-testid="stVerticalBlock"] .stButton > button {
     font-weight: 700 !important;
     margin-bottom: 12px !important;
     border: 2px solid #e2e8f0 !important;
-    background: #ffffff !important;
+    background: #ffffff;
     
 }
 
