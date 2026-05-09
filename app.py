@@ -117,6 +117,7 @@ st.markdown(
 
 # ── Buttons ───────────────────────────────────────────────────────────────────
 if st.button("⚙️   ניהול נתונים", use_container_width=True):
+    st.session_state["manage_section"] = "overview"
     st.switch_page("pages/1_Manage_Data.py")
 
 if st.button("📅   יצירת לוח אימונים", use_container_width=True):
