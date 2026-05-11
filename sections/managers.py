@@ -128,39 +128,14 @@ def render():
         team_name  = TEAM_NAMES.get(mgr.get("team_key"), "—")
         active_clr = "#a16207" if mgr.get("active", True) else "#94a3b8"
         tag_bg     = "#fef9c3" if mgr.get("active", True) else "#f1f5f9"
+        inactive_badge = "" if mgr.get("active", True) else "<span style='font-size:12px;color:#94a3b8;'>(לא פעיל)</span>"
 
         col_card, col_edit, col_del = st.columns([10, 0.6, 0.6])
         with col_card:
-            st.markdown(
-                f"""
-                <div class='data-card' style='border-right:5px solid #a16207;'>
-                    <div style='display:flex;align-items:center;justify-content:space-between;'>
-                        <div style='display:flex;align-items:center;gap:16px;'>
-                            <div style='width:52px;height:52px;border-radius:50%;
-                                        background:#fef9c3;display:flex;align-items:center;
-                                        justify-content:center;font-size:24px;'>💼</div>
-                            <div>
-                                <div style='font-size:18px;font-weight:800;color:#0f172a;'>
-                                    {mgr['name']}
-                                    {"" if mgr.get("active",True) else
-                                     " <span style='font-size:12px;color:#94a3b8;'>(לא פעיל)</span>"}
-                                </div>
-                                <div style='margin-top:4px;'>
-                                    <span class='tag' style='background:{tag_bg};color:{active_clr};'>
-                                        {team_name}
-                                    </span>
-                                </div>
-                                <div style='font-size:13px;color:#64748b;margin-top:6px;'>
-                                    ✉️ {mgr.get('email','—')} &nbsp;&nbsp;
-                                    📞 {mgr.get('phone','—')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
+            html = (
+                "<div class='data-card' style='border-right:5px solid #a16207;'>"                "<div style='display:flex;align-items:center;gap:16px;'>"                "<div style='width:52px;height:52px;border-radius:50%;background:#fef9c3;"                "display:flex;align-items:center;justify-content:center;font-size:24px;'>💼</div>"                "<div>"                f"<div style='font-size:18px;font-weight:800;color:#0f172a;'>{mgr['name']} {inactive_badge}</div>"                f"<div style='margin-top:4px;'><span class='tag' style='background:{tag_bg};color:{active_clr};'>{team_name}</span></div>"                f"<div style='font-size:13px;color:#64748b;margin-top:6px;'>✉️ {mgr.get('email','—')} &nbsp;&nbsp; 📞 {mgr.get('phone','—')}</div>"                "</div></div></div>"
             )
+            st.markdown(html, unsafe_allow_html=True)
         with col_edit:
             if st.button("✏️", key=f"em_{i}"):
                 st.session_state.edit_manager_idx = i
