@@ -6,7 +6,7 @@ import streamlit as st
 from sections.shared import top_nav, page_header
 
 # נתוני ברירת מחדל
-DEFAULT_TEAMS = [
+DEFAULT_קבוצהS = [
     {"name": "בוגרים גברים א׳", "age_group": "בוגרים",  "sessions": 4, "duration": 90, "coach": "יוסי כהן",  "halls": ["אשלים","נחלת"],    "split_court": False, "shabbat": False, "color": "#d90429"},
     {"name": "בוגרות נשים א׳",  "age_group": "בוגרים",  "sessions": 3, "duration": 90, "coach": "מיכל לוי",  "halls": ["אשלים","רוזן"],     "split_court": True,  "shabbat": False, "color": "#d90429"},
     {"name": "נערים א׳ צפון",   "age_group": "כיתה י׳",  "sessions": 3, "duration": 90, "coach": "דני אברהם", "halls": ["רוזן","גן נחום"],   "split_court": True,  "shabbat": False, "color": "#1d4ed8"},
@@ -14,7 +14,7 @@ DEFAULT_TEAMS = [
     {"name": "ילדים ז׳ 1",      "age_group": "כיתה ז׳",  "sessions": 2, "duration": 60, "coach": "דני אברהם", "halls": ["אשלים","גן נחום"],  "split_court": True,  "shabbat": False, "color": "#15803d"},
 ]
 
-ALL_HALLS    = ["אשלים", "רוזן", "נחלת", "גן נחום"]
+ALL_אולםS    = ["אשלים", "רוזן", "נחלת", "גן נחום"]
 AGE_GROUPS   = ["בוגרים", "כיתה י״ב", "כיתה י״א", "כיתה י׳", "כיתה ט׳", "כיתה ח׳", "כיתה ז׳"]
 COLOR_MAP    = {"בוגרים": "#d90429", "כיתה י׳": "#d90429", "כיתה י״א": "#d90429",
                 "כיתה י״ב": "#d90429", "כיתה ט׳": "#1d4ed8", "כיתה ח׳": "#1d4ed8",
@@ -23,7 +23,7 @@ COLOR_MAP    = {"בוגרים": "#d90429", "כיתה י׳": "#d90429", "כיתה
 
 def init_state():
     for k, v in {
-        "teams": DEFAULT_TEAMS,
+        "teams": DEFAULT_קבוצהS,
         "show_add_team": False,
         "edit_team_idx": None,
     }.items():
@@ -73,7 +73,7 @@ def _form(title, data, save_key, cancel_key, coaches):
         curr_halls = data.get("halls", [])
         hall_cols = st.columns(4)
         f_halls = []
-        for j, hall in enumerate(ALL_HALLS):
+        for j, hall in enumerate(ALL_אולםS):
             with hall_cols[j]:
                 if st.checkbox(hall, value=hall in curr_halls, key=f"f_hall_{j}_{save_key}"):
                     f_halls.append(hall)
