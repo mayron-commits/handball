@@ -104,24 +104,32 @@ def inject_css():
 
 
 def top_nav(back_label=None, back_section="overview"):
-    """כפתורי ניווט עליונים + לוגו"""
+    """header אחיד – כפתור בית מימין, לוגו משמאל, קו מפריד"""
     col_home, col_back, col_space, col_logo = st.columns([1.2, 2, 5, 0.8])
+
     with col_home:
         if st.button("🏠 בית", key=f"home_{back_section}_{id(back_label)}"):
             st.session_state["manage_section"] = "overview"
             st.switch_page("app.py")
+
     if back_label:
         with col_back:
             if st.button(f"← {back_label}", key=f"back_{back_section}_{id(back_label)}"):
                 st.session_state["manage_section"] = back_section
-                # נקה state ספציפי
                 for k in ["edit_team_idx","show_add_team",
                           "edit_coach_idx","show_add_coach","avail_coach_idx"]:
                     st.session_state[k] = None if "idx" in k else False
                 st.rerun()
+
     with col_logo:
         if os.path.exists("logo.png"):
             st.image("logo.png", width=55)
+        else:
+            st.markdown(
+                "<div style='text-align:center;font-size:32px;'>🤾</div>",
+                unsafe_allow_html=True,
+            )
+
     st.markdown("<hr class='div'>", unsafe_allow_html=True)
 
 
