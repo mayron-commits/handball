@@ -128,8 +128,11 @@ def _render_availability():
     )
     st.write("")
 
-    # בחירת מאמן + badge
-    avail      = coach["avail"]
+    # בחירת מאמן + badge – אם אין avail נייצר ברירת מחדל
+    if "avail" not in coach:
+        coach["avail"] = {d: {s: False for s in SLOTS} for d in DAYS_HE}
+        st.session_state.coaches[idx] = coach
+    avail = coach["avail"]
     free_count = sum(1 for d in DAYS_HE for s in SLOTS if avail.get(d, {}).get(s, False))
     total      = len(DAYS_HE) * len(SLOTS)
 
@@ -237,8 +240,8 @@ def _render_list():
 
     # ── כרטיסי מאמנים ─────────────────────────────────────────────────
     for i, coach in enumerate(st.session_state.coaches):
-        free = sum(1 for d in DAYS_HE for s in SLOTS
-                   if coach.get("avail", {}).get(d, {}).get(s, False))
+        avail_data = coach.get("avail", {d: {s: False for s in SLOTS} for d in DAYS_HE})
+        free = sum(1 for d in DAYS_HE for s in SLOTS if avail_data.get(d, {}).get(s, False))
 
         col_avatar, col_info, col_avail, col_edit, col_del = st.columns([0.8, 5, 2.5, 0.5, 0.5])
 
