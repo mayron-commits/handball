@@ -177,6 +177,28 @@ if st.session_state.opt_sub == "main":
         unsafe_allow_html=True,
     )
 
+    # ── עיצוב כפתורים ──
+    st.markdown("""
+    <style>
+    div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button {
+        background: #ffffff !important; color: #0f172a !important;
+        border: 2px solid #e2e8f0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    }
+    div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button:hover {
+        border-color: #d90429 !important; color: #d90429 !important;
+    }
+    div[data-testid="stVerticalBlock"] > div:nth-child(5) .stButton > button {
+        background: #d90429 !important; color: #ffffff !important;
+        border: none !important; box-shadow: 0 4px 20px rgba(217,4,41,0.35) !important;
+    }
+    div[data-testid="stVerticalBlock"] > div:nth-child(6) .stButton > button {
+        background: #0f172a !important; color: #ffffff !important;
+        border: none !important; box-shadow: 0 4px 14px rgba(0,0,0,0.2) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # שלושה כפתורים – לבן / אדום / כהה
     if st.button("≡   הוספת אילוצים", use_container_width=True, key="btn_c"):
         st.session_state.opt_sub = "constraints"
@@ -187,6 +209,13 @@ if st.session_state.opt_sub == "main":
     if st.button("↑   העלאת לוח משחקים", use_container_width=True, key="btn_u"):
         st.session_state.opt_sub = "upload"
         st.rerun()
+
+    # כפתור חזרה לבית
+    st.write("")
+    col_center, _, _ = st.columns([1, 1, 1])
+    with col_center:
+        if st.button("🏠 חזרה לדף הבית", use_container_width=True, key="btn_home_main"):
+            st.switch_page("app.py")
 
     # הרצה
     if run_clicked:
