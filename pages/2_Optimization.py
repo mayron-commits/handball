@@ -4,7 +4,7 @@ pages/2_Optimization.py
 """
 import streamlit as st
 import time, random, os
-from sections.db_data import קבוצהS_DB, מאמןES_DB, אולםS_DB, מאמן_NAMES, אולם_NAMES, קבוצה_NAMES
+from sections.db_data import TEAMS_DB, COACHES_DB, HALLS_DB, COACH_NAMES, HALL_NAMES, TEAM_NAMES
 
 st.set_page_config(
     page_title="מנוע אופטימיזציה – הפועל ראשון לציון",
@@ -289,15 +289,15 @@ elif st.session_state.opt_sub == "constraints":
             # בחירה דינמית
             if entity_type == "קבוצה":
                 st.markdown("<div class='form-lbl'>בחר קבוצה</div>", unsafe_allow_html=True)
-                team_opts = ["בחר..."] + [t["name"] for t in קבוצהS_DB if t["active"]]
+                team_opts = ["בחר..."] + [t["name"] for t in TEAMS_DB if t["active"]]
                 entity_name = st.selectbox("קבוצה", team_opts, label_visibility="collapsed")
             elif entity_type == "אולם":
                 st.markdown("<div class='form-lbl'>בחר אולם</div>", unsafe_allow_html=True)
-                hall_opts = ["בחר..."] + [h["name"] for h in אולםS_DB]
+                hall_opts = ["בחר..."] + [h["name"] for h in HALLS_DB]
                 entity_name = st.selectbox("אולם", hall_opts, label_visibility="collapsed")
             else:
                 st.markdown("<div class='form-lbl'>בחר מאמן</div>", unsafe_allow_html=True)
-                coach_opts = ["בחר..."] + list(מאמן_NAMES.values())
+                coach_opts = ["בחר..."] + list(COACH_NAMES.values())
                 entity_name = st.selectbox("מאמן", coach_opts, label_visibility="collapsed")
 
             st.markdown("<div class='form-lbl'>תאריך</div>", unsafe_allow_html=True)
