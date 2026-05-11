@@ -1,272 +1,530 @@
 """
 pages/2_Optimization.py
-Optimization engine – constraints, retry, solution comparison.
+מנוע אופטימיזציה – Add Constraints / Upload Match Schedule / Run Optimization
 """
 import streamlit as st
-import time
-import random
-from utils import apply_global_css, show_logo_header
+import time, random, os
+from sections.db_data import TEAMS_DB, COACHES_DB, HALLS_DB, COACH_NAMES, HALL_NAMES, TEAM_NAMES
 
 st.set_page_config(
-    page_title="Optimization Engine – Hapoel RL",
+    page_title="מנוע אופטימיזציה – הפועל ראשון לציון",
     page_icon="📅",
-    layout="wide",
+    layout="centered",
 )
-apply_global_css()
 
 st.markdown("""
 <style>
-.run-btn>div>button {
-    background-color: #d90429 !important;
-    color: white !important;
-    border: none !important;
-    height: 3.5em !important;
-    font-size: 16px !important;
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap');
+* { font-family: 'Heebo', sans-serif !important; }
+.main, .stApp { background: #ffffff; direction: rtl; }
+[data-testid="stAppViewContainer"] { background: #ffffff; }
+[data-testid="stHeader"] { background: #ffffff; }
+.block-container { max-width: 780px !important; margin: auto !important; padding-top: 1.5rem !important; }
+
+/* ── כפתורי ניווט ── */
+.stButton > button {
+    border-radius: 10px !important; font-size: 14px !important; font-weight: 600 !important;
+    height: 40px !important; background: #ffffff !important; color: #0f172a !important;
+    border: 1.5px solid #e2e8f0 !important; padding: 0 16px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; width: auto !important;
 }
-.retry-btn>div>button {
-    background-color: white !important;
-    color: #d90429 !important;
-    border: 2px solid #d90429 !important;
-    height: 3.5em !important;
+.stButton > button:hover { border-color: #d90429 !important; color: #d90429 !important; }
+
+/* ── כפתורי פעולה גדולים ── */
+.action-btn > div > button {
+    width: 100% !important; border-radius: 16px !important; height: 80px !important;
+    font-size: 18px !important; font-weight: 700 !important;
+    background: #ffffff !important; color: #0f172a !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    display: flex !important; align-items: center !important;
+    justify-content: space-between !important; padding: 0 24px !important;
+    transition: all 0.15s !important;
 }
-.confirm-btn>div>button {
-    background-color: #16a34a !important;
-    color: white !important;
-    border: none !important;
-    height: 3.5em !important;
+.action-btn > div > button:hover {
+    border-color: #d90429 !important; color: #d90429 !important;
+    box-shadow: 0 4px 16px rgba(217,4,41,0.12) !important;
 }
+
+/* ── כפתור הרצה אדום ── */
+.run-btn > div > button {
+    width: 100% !important; border-radius: 16px !important; height: 80px !important;
+    font-size: 20px !important; font-weight: 800 !important;
+    background: #d90429 !important; color: #ffffff !important; border: none !important;
+    box-shadow: 0 6px 24px rgba(217,4,41,0.4) !important;
+}
+.run-btn > div > button:hover { background: #b80222 !important; color: #ffffff !important; }
+
+/* ── כפתור ניסה שוב ── */
+.retry-btn > div > button {
+    width: 100% !important; border-radius: 10px !important; height: 44px !important;
+    background: #ffffff !important; color: #d90429 !important;
+    border: 2px solid #d90429 !important; font-size: 15px !important; font-weight: 700 !important;
+}
+
+/* ── כפתור שמירה ירוק ── */
+.confirm-btn > div > button {
+    width: 100% !important; border-radius: 10px !important; height: 44px !important;
+    background: #16a34a !important; color: #ffffff !important;
+    border: none !important; font-size: 15px !important; font-weight: 700 !important;
+}
+
+/* ── כרטיס אילוץ ── */
+.constraint-chip {
+    background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+}
+
+/* ── Solution card ── */
 .solution-card {
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 22px 26px;
-    margin-bottom: 12px;
+    background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 12px;
 }
-.solution-card.active  { border-color: #d90429; box-shadow: 0 0 0 3px rgba(217,4,41,0.08); }
-.solution-card.prev    { border-color: #94a3b8; opacity: 0.75; }
+.solution-card.active { border-color: #d90429; box-shadow: 0 0 0 3px rgba(217,4,41,0.08); }
+.solution-card.prev   { border-color: #94a3b8; opacity: 0.75; }
+
+/* ── Drop zone ── */
+.drop-zone {
+    border: 2px dashed #e2e8f0; border-radius: 16px;
+    padding: 60px 40px; text-align: center; background: #fafafa;
+    transition: border-color 0.15s;
+}
+
+/* ── Divider ── */
+hr.div { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
+
+/* ── form labels ── */
+.form-lbl { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+
+/* ── cancel btn in form ── */
+.cancel-sm > div > button {
+    background: #ffffff !important; color: #64748b !important;
+    border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important;
+    height: 40px !important; font-size: 14px !important; width: 100% !important;
+}
+.save-sm > div > button {
+    background: #d90429 !important; color: #ffffff !important;
+    border: none !important; border-radius: 8px !important;
+    height: 40px !important; font-size: 14px !important; font-weight: 700 !important; width: 100% !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ── Session state ─────────────────────────────────────────────────────────────
 for k, v in {
-    "constraints": [],
-    "show_constraint_form": False,
-    "optimization_result": None,
-    "previous_result": None,
-    "show_previous": False,
+    "opt_sub":            "main",   # "main" | "constraints" | "upload"
+    "constraints":        [],
+    "opt_result":         None,
+    "prev_result":        None,
+    "show_previous":      False,
 }.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
+# ── פונקציות עזר ─────────────────────────────────────────────────────────────
 def fake_solution(seed=None):
-    if seed:
-        random.seed(seed)
+    if seed: random.seed(seed)
     score = random.randint(72, 96)
     return {
-        "score": score,
-        "scheduled": random.randint(34, 42),
-        "total": 42,
-        "hard_constraints": 14,
-        "warnings": random.randint(0, 4),
+        "score": score, "scheduled": random.randint(34, 42), "total": 42,
+        "hard_constraints": 14, "warnings": random.randint(0, 4),
         "sessions": [
-            {"team": "בוגרים גברים א׳", "day": "שני",    "time": "19:00–20:30", "hall": "נחלת",    "warning": False},
-            {"team": "בוגרות נשים א׳",  "day": "שני",    "time": "19:00–20:15", "hall": "אשלים",   "warning": False},
-            {"team": "נערים א׳ צפון",   "day": "ראשון",  "time": "16:30–17:45", "hall": "רוזן",    "warning": False},
-            {"team": "נערות א׳",        "day": "ראשון",  "time": "16:00–17:15", "hall": "גן נחום", "warning": score < 85},
-            {"team": "ילדים ז׳ 1",      "day": "שלישי", "time": "16:00–17:00", "hall": "אשלים",   "warning": score < 80},
+            {"team": "בוגרים",    "day": "שני",    "time": "19:00–20:30", "hall": "נחלת",  "warning": False},
+            {"team": "בוגרות",    "day": "שני",    "time": "19:00–20:15", "hall": "אשלים", "warning": False},
+            {"team": "י",         "day": "ראשון",  "time": "16:30–17:45", "hall": "רועים", "warning": False},
+            {"team": "נוער",      "day": "ראשון",  "time": "16:00–17:15", "hall": "גן נחום","warning": score < 85},
+            {"team": "ילדות ז",   "day": "שלישי", "time": "16:00–17:00", "hall": "אשלים", "warning": score < 80},
         ],
     }
 
-# ── Back ──────────────────────────────────────────────────────────────────────
-col_btn, _ = st.columns([1, 8])
-with col_btn:
-    if st.button("🏠 בית"):
-        st.switch_page("app.py")
+def render_solution_card(res, label, css_class):
+    score_color = "#16a34a" if res["score"] >= 85 else "#d90429" if res["score"] < 75 else "#d97706"
+    warn_txt = f"&nbsp;·&nbsp; ⚠️ {res['warnings']} אזהרות" if res["warnings"] else ""
+    st.markdown(f"""
+    <div class='solution-card {css_class}'>
+        <div style='display:flex;justify-content:space-between;align-items:center;'>
+            <div>
+                <div style='font-size:17px;font-weight:800;margin-bottom:6px;'>{label}</div>
+                <div style='color:#64748b;font-size:13px;'>
+                    {res['scheduled']}/{res['total']} אימונים שובצו &nbsp;·&nbsp;
+                    {res['hard_constraints']} אילוצים קשיחים ✔️{warn_txt}
+                </div>
+            </div>
+            <div style='text-align:center;'>
+                <div style='width:72px;height:72px;border-radius:50%;
+                            border:5px solid {score_color};display:flex;
+                            align-items:center;justify-content:center;
+                            font-size:24px;font-weight:900;color:{score_color};'>
+                    {res['score']}
+                </div>
+                <div style='font-size:11px;color:#94a3b8;margin-top:4px;'>ציון איכות</div>
+            </div>
+        </div>
+    </div>""", unsafe_allow_html=True)
 
-show_logo_header("Optimization Engine", "הוסף אילוצים והרץ את האלגוריתם")
-st.write("---")
-
-# ════════════════════════════════════════════════════════════════════
-# A – CONSTRAINTS
-# ════════════════════════════════════════════════════════════════════
-st.markdown("### 🔒 אילוצים")
-
-col_add, col_upload, _ = st.columns([2, 2, 3])
-with col_add:
-    if st.button("➕ הוסף אילוץ"):
-        st.session_state.show_constraint_form = not st.session_state.show_constraint_form
-with col_upload:
-    uploaded = st.file_uploader("📤 העלה לוח משחקים", type=["xlsx","csv"],
-                                 label_visibility="collapsed")
-    if uploaded:
-        st.success(f"✅ הועלה: {uploaded.name}")
-
-if st.session_state.show_constraint_form:
-    with st.container(border=True):
-        st.markdown("**אילוץ חדש**")
-        entity_type = st.radio("סוג ישות", ["קבוצה","אולם","מאמן"], horizontal=True)
-        options_map = {
-            "קבוצה": ["בוגרים גברים א׳","בוגרות נשים א׳","נערים א׳ צפון","נערות א׳","ילדים ז׳ 1"],
-            "אולם":  ["אשלים","רוזן","נחלת","גן נחום"],
-            "מאמן":  ["יוסי כהן","מיכל לוי","דני אברהם","שרה גולן"],
-        }
-        col_e, col_d = st.columns(2)
-        with col_e:
-            entity_name = st.selectbox(f"בחר {entity_type}", options_map[entity_type])
-        with col_d:
-            constraint_date = st.date_input("תאריך")
-        col_s, col_en = st.columns(2)
-        with col_s:
-            start_time = st.time_input("משעה", value=None)
-        with col_en:
-            end_time = st.time_input("עד שעה", value=None)
-        reason = st.text_input("סיבה", placeholder="למשל: טיול שנתי, שיפוץ...")
-        c1, c2 = st.columns([1,3])
-        with c1:
-            if st.button("✅ הוסף לתור"):
-                st.session_state.constraints.append({
-                    "type": entity_type, "entity": entity_name,
-                    "date": str(constraint_date),
-                    "start": str(start_time) if start_time else "—",
-                    "end":   str(end_time)   if end_time   else "—",
-                    "reason": reason or "—",
-                })
-                st.session_state.show_constraint_form = False
-                st.toast("✅ האילוץ נוסף!")
+# ── ניווט עליון ───────────────────────────────────────────────────────────────
+def top_nav(show_back=True, back_label="← חזרה"):
+    col_home, col_back, col_space, col_logo = st.columns([1.2, 1.8, 5.2, 0.8])
+    with col_home:
+        if st.button("🏠 בית", key="opt_home"):
+            st.session_state.opt_sub = "main"
+            st.switch_page("app.py")
+    if show_back:
+        with col_back:
+            if st.button(back_label, key="opt_back"):
+                st.session_state.opt_sub = "main"
                 st.rerun()
-        with c2:
-            if st.button("ביטול"):
-                st.session_state.show_constraint_form = False
-                st.rerun()
-
-color_map = {"קבוצה":"#3B82F6","אולם":"#A855F7","מאמן":"#22C55E"}
-for i, c in enumerate(st.session_state.constraints):
-    color = color_map.get(c["type"], "#d90429")
-    col_info, col_del = st.columns([11, 1])
-    with col_info:
-        st.markdown(
-            f"""<div style="background:white; border:1px solid #e2e8f0; border-right:4px solid {color};
-                            border-radius:10px; padding:10px 16px; margin-bottom:6px;">
-                <strong style="color:{color};">{c['type']}</strong> · <strong>{c['entity']}</strong>
-                · <span style="color:#64748b;">{c['date']}</span> · {c['start']} – {c['end']}
-                <br/><span style="color:#94a3b8; font-size:12px;">"{c['reason']}"</span>
-            </div>""", unsafe_allow_html=True)
-    with col_del:
-        if st.button("🗑️", key=f"del_{i}"):
-            st.session_state.constraints.pop(i); st.rerun()
-
-if st.session_state.constraints:
-    if st.button("🗑️ נקה הכל"):
-        st.session_state.constraints = []; st.rerun()
-else:
-    st.caption("אין אילוצים בתור.")
-
-st.write("---")
+    with col_logo:
+        if os.path.exists("logo.png"):
+            st.image("logo.png", width=55)
+    st.markdown("<hr class='div'>", unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# B – RUN / RETRY
+# מסך 1 – ראשי (שלושה כפתורים גדולים)
 # ════════════════════════════════════════════════════════════════════
-has_result = st.session_state.optimization_result is not None
+if st.session_state.opt_sub == "main":
+    col_home, col_space, col_logo = st.columns([1.2, 6.8, 0.8])
+    with col_home:
+        if st.button("🏠 בית", key="main_home"):
+            st.switch_page("app.py")
+    with col_logo:
+        if os.path.exists("logo.png"):
+            st.image("logo.png", width=55)
+    st.markdown("<hr class='div'>", unsafe_allow_html=True)
 
-col_run, col_retry = st.columns([3, 2])
-with col_run:
+    st.markdown("""
+        <div style='text-align:center;margin-bottom:40px;'>
+            <div style='font-size:22px;font-weight:400;color:#64748b;letter-spacing:2px;'>OPTIMIZATION</div>
+            <div style='font-size:36px;font-weight:900;color:#0f172a;'>ENGINE</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # כפתור 1 – הוספת אילוצים
+    st.markdown('<div class="action-btn">', unsafe_allow_html=True)
+    if st.button("ADD CONSTRAINTS  ≡", use_container_width=True, key="btn_constraints"):
+        st.session_state.opt_sub = "constraints"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.write("")
+
+    # כפתור 2 – העלאת לוח משחקים
+    st.markdown('<div class="action-btn">', unsafe_allow_html=True)
+    if st.button("UPLOAD MATCH SCHEDULE  ↑", use_container_width=True, key="btn_upload"):
+        st.session_state.opt_sub = "upload"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.write("")
+
+    # כפתור 3 – הרצת אופטימיזציה
     st.markdown('<div class="run-btn">', unsafe_allow_html=True)
-    run_clicked = st.button("🚀 הרץ אופטימיזציה", use_container_width=True)
+    run_clicked = st.button("RUN OPTIMIZATION  ▶", use_container_width=True, key="btn_run")
     st.markdown('</div>', unsafe_allow_html=True)
 
-retry_clicked = False
-if has_result:
-    with col_retry:
-        st.markdown('<div class="retry-btn">', unsafe_allow_html=True)
-        retry_clicked = st.button("🔄 נסה פתרון חלופי", use_container_width=True)
+    st.markdown("""
+        <div style='text-align:center;color:#94a3b8;font-size:13px;margin-top:32px;'>
+            הוסף אילוצים → העלה לוח משחקים → הרץ אופטימיזציה
+        </div>
+    """, unsafe_allow_html=True)
+
+    if run_clicked:
+        with st.spinner("מריץ אלגוריתם שיבוץ..."):
+            time.sleep(1.8)
+        if st.session_state.opt_result:
+            st.session_state.prev_result = st.session_state.opt_result
+        st.session_state.opt_result  = fake_solution(seed=random.randint(1,9999))
+        st.session_state.show_previous = False
+        st.session_state.opt_sub = "results"
+        st.rerun()
+
+    # תוצאות קיימות
+    if st.session_state.opt_result and st.session_state.opt_sub == "main":
+        st.write("---")
+        st.markdown("### 📊 תוצאות אחרונות")
+        col_view, col_retry = st.columns(2)
+        with col_view:
+            if st.button("📋 צפה בתוצאות", use_container_width=True):
+                st.session_state.opt_sub = "results"
+                st.rerun()
+        with col_retry:
+            st.markdown('<div class="retry-btn">', unsafe_allow_html=True)
+            if st.button("🔄 נסה פתרון חלופי", use_container_width=True):
+                with st.spinner("מחפש פתרון חלופי..."):
+                    time.sleep(1.2)
+                st.session_state.prev_result = st.session_state.opt_result
+                st.session_state.opt_result  = fake_solution(seed=random.randint(1,9999))
+                st.session_state.opt_sub = "results"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# מסך 2 – הוספת אילוצים
+# ════════════════════════════════════════════════════════════════════
+elif st.session_state.opt_sub == "constraints":
+    top_nav(back_label="← חזרה")
+
+    st.markdown("""
+        <div style='display:flex;align-items:center;gap:10px;margin-bottom:4px;'>
+            <span style='font-size:22px;'>🔒</span>
+            <span style='font-size:28px;font-weight:900;color:#0f172a;'>Add Constraints</span>
+        </div>
+        <div style='font-size:14px;color:#94a3b8;margin-bottom:24px;'>
+            צור תקופות חסימה לקבוצות, אולמות או מאמנים
+        </div>
+    """, unsafe_allow_html=True)
+
+    col_form, col_queue = st.columns([1.1, 1])
+
+    # ── טופס ─────────────────────────────────────────────────────────
+    with col_form:
+        with st.container(border=True):
+            st.markdown("**＋ New Constraint**")
+            st.write("")
+
+            # Entity Type – 3 כפתורים
+            entity_type = st.radio("סוג ישות", ["Team", "Hall", "Coach"],
+                                    horizontal=True, label_visibility="collapsed")
+            st.write("")
+
+            # בחירה דינמית
+            if entity_type == "Team":
+                st.markdown("<div class='form-lbl'>Select Team</div>", unsafe_allow_html=True)
+                team_opts = ["Choose..."] + [t["name"] for t in TEAMS_DB if t["active"]]
+                entity_name = st.selectbox("Team", team_opts, label_visibility="collapsed")
+            elif entity_type == "Hall":
+                st.markdown("<div class='form-lbl'>Select Hall</div>", unsafe_allow_html=True)
+                hall_opts = ["Choose..."] + [h["name"] for h in HALLS_DB]
+                entity_name = st.selectbox("Hall", hall_opts, label_visibility="collapsed")
+            else:
+                st.markdown("<div class='form-lbl'>Select Coach</div>", unsafe_allow_html=True)
+                coach_opts = ["Choose..."] + list(COACH_NAMES.values())
+                entity_name = st.selectbox("Coach", coach_opts, label_visibility="collapsed")
+
+            st.markdown("<div class='form-lbl'>Date</div>", unsafe_allow_html=True)
+            c_date = st.date_input("Date", label_visibility="collapsed")
+
+            col_ts, col_te = st.columns(2)
+            with col_ts:
+                st.markdown("<div class='form-lbl'>From Time</div>", unsafe_allow_html=True)
+                time_opts = ["Select..."] + [f"{h:02d}:00" for h in range(6, 23)]
+                from_time = st.selectbox("From", time_opts, label_visibility="collapsed")
+            with col_te:
+                st.markdown("<div class='form-lbl'>To Time</div>", unsafe_allow_html=True)
+                to_time = st.selectbox("To", time_opts, label_visibility="collapsed", key="to_time")
+
+            st.markdown("<div class='form-lbl'>Reason</div>", unsafe_allow_html=True)
+            reason = st.text_input("Reason",
+                                   placeholder="e.g., Match, Training blocked, Hall maintenance",
+                                   label_visibility="collapsed")
+
+            st.write("")
+            st.markdown('<div class="save-sm">', unsafe_allow_html=True)
+            if st.button("＋ Add to Queue", use_container_width=True, key="add_constraint"):
+                if entity_name != "Choose..." and from_time != "Select..." and to_time != "Select...":
+                    st.session_state.constraints.append({
+                        "type": entity_type, "entity": entity_name,
+                        "date": str(c_date),
+                        "from": from_time, "to": to_time,
+                        "reason": reason or "—",
+                    })
+                    st.toast("✅ האילוץ נוסף לתור!")
+                    st.rerun()
+                else:
+                    st.error("נא למלא את כל השדות")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── תור אילוצים ──────────────────────────────────────────────────
+    with col_queue:
+        constraints = st.session_state.constraints
+        n = len(constraints)
+        st.markdown(
+            f"<div style='display:flex;align-items:center;gap:8px;margin-bottom:16px;'>"
+            f"<span style='color:#d90429;font-size:18px;'>📅</span>"
+            f"<span style='font-size:18px;font-weight:800;'>Constraint Queue ({n})</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+
+        if not constraints:
+            st.markdown("""
+                <div style='text-align:center;padding:40px 20px;color:#94a3b8;'>
+                    <div style='font-size:40px;margin-bottom:12px;'>🔒</div>
+                    <div style='font-weight:600;'>No constraints added yet</div>
+                    <div style='font-size:13px;'>Use the form to add constraints</div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            color_map = {"Team": "#3B82F6", "Hall": "#A855F7", "Coach": "#22C55E"}
+            for i, c in enumerate(constraints):
+                color = color_map.get(c["type"], "#d90429")
+                col_c, col_x = st.columns([10, 1])
+                with col_c:
+                    st.markdown(f"""
+                    <div style='background:#f8fafc;border:1.5px solid #e2e8f0;
+                                border-right:4px solid {color};border-radius:10px;
+                                padding:10px 14px;margin-bottom:8px;'>
+                        <div style='display:flex;justify-content:space-between;'>
+                            <span style='font-size:11px;font-weight:700;background:{color}22;
+                                         color:{color};border-radius:4px;padding:2px 8px;'>
+                                {c['type'].upper()}
+                            </span>
+                            <span style='font-size:12px;color:#64748b;'>{c['date']}</span>
+                        </div>
+                        <div style='font-size:15px;font-weight:700;color:#0f172a;margin:4px 0;'>
+                            {c['entity']}
+                        </div>
+                        <div style='font-size:12px;color:#64748b;'>
+                            🕐 {c['from']} – {c['to']} &nbsp;·&nbsp; {c['reason']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col_x:
+                    if st.button("✕", key=f"del_c_{i}"):
+                        st.session_state.constraints.pop(i)
+                        st.rerun()
+
+            st.write("")
+            col_submit, col_clear = st.columns(2)
+            with col_submit:
+                st.markdown('<div class="save-sm">', unsafe_allow_html=True)
+                if st.button("Submit All", use_container_width=True):
+                    st.success(f"✅ {n} אילוצים נשלחו!")
+                    st.session_state.opt_sub = "main"
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col_clear:
+                st.markdown('<div class="cancel-sm">', unsafe_allow_html=True)
+                if st.button("Clear All", use_container_width=True):
+                    st.session_state.constraints = []
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# מסך 3 – העלאת לוח משחקים
+# ════════════════════════════════════════════════════════════════════
+elif st.session_state.opt_sub == "upload":
+    top_nav(back_label="← חזרה")
+
+    st.markdown("""
+        <div style='font-size:22px;font-weight:900;color:#0f172a;margin-bottom:4px;'>
+            Import & Sync Dashboard
+        </div>
+        <div style='font-size:14px;color:#94a3b8;margin-bottom:24px;'>
+            העלה לוח משחקים של הליגה וצור חסימות אוטומטיות
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Drop zone
+    st.markdown("""
+        <div class='drop-zone'>
+            <div style='font-size:48px;color:#cbd5e1;margin-bottom:16px;'>📄</div>
+            <div style='font-size:18px;font-weight:700;color:#0f172a;margin-bottom:8px;'>
+                Upload League Match Schedule
+            </div>
+            <div style='font-size:14px;color:#64748b;'>
+                Drag and drop your CSV or Excel file here
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.write("")
+    uploaded = st.file_uploader(
+        "בחר קובץ",
+        type=["xlsx", "xls", "csv"],
+        label_visibility="collapsed",
+    )
+
+    st.markdown("""
+        <div style='font-size:12px;color:#94a3b8;margin-top:12px;'>
+            Supported formats: CSV, Excel (.xlsx, .xls)<br>
+            Expected columns: Date, Time, League, Hall, Home Team, Away Team
+        </div>
+    """, unsafe_allow_html=True)
+
+    if uploaded:
+        st.success(f"✅ הקובץ '{uploaded.name}' הועלה בהצלחה!")
+        st.info("הקובץ יעובד ויצור חסימות אוטומטיות עבור כל משחק.")
+
+        with st.expander("תצוגה מקדימה"):
+            try:
+                import pandas as pd
+                if uploaded.name.endswith(".csv"):
+                    df = pd.read_csv(uploaded)
+                else:
+                    df = pd.read_excel(uploaded)
+                st.dataframe(df.head(10))
+            except Exception:
+                st.warning("לא ניתן לטעון תצוגה מקדימה")
+
+        st.write("")
+        st.markdown('<div class="save-sm">', unsafe_allow_html=True)
+        if st.button("✅ אשר וסנכרן", use_container_width=True, key="confirm_upload"):
+            st.success("✅ הסנכרון הושלם! החסימות עודכנו.")
+            time.sleep(1)
+            st.session_state.opt_sub = "main"
+            st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-if run_clicked:
-    with st.spinner("מריץ אלגוריתם שיבוץ..."):
-        time.sleep(1.8)
-    if st.session_state.optimization_result:
-        st.session_state.previous_result = st.session_state.optimization_result
-    st.session_state.optimization_result = fake_solution(seed=random.randint(1,9999))
-    st.session_state.show_previous = False
-    st.rerun()
-
-if retry_clicked:
-    with st.spinner("מחפש פתרון חלופי..."):
-        time.sleep(1.4)
-    st.session_state.previous_result = st.session_state.optimization_result
-    st.session_state.optimization_result = fake_solution(seed=random.randint(1,9999))
-    st.session_state.show_previous = False
-    st.toast("✅ נמצא פתרון חלופי!")
-    st.rerun()
-
 # ════════════════════════════════════════════════════════════════════
-# C – RESULTS
+# מסך 4 – תוצאות אופטימיזציה
 # ════════════════════════════════════════════════════════════════════
-if st.session_state.optimization_result:
-    result = st.session_state.optimization_result
-    prev   = st.session_state.previous_result
+elif st.session_state.opt_sub == "results":
+    top_nav(back_label="← חזרה")
 
-    st.markdown("### 📊 תוצאות")
+    result = st.session_state.opt_result
+    prev   = st.session_state.prev_result
 
-    if prev:
-        tog = "🙈 הסתר פתרון קודם" if st.session_state.show_previous else "👁️ הצג פתרון קודם"
-        if st.button(tog):
-            st.session_state.show_previous = not st.session_state.show_previous
+    st.markdown("<div style='font-size:28px;font-weight:900;margin-bottom:16px;'>📊 תוצאות האופטימיזציה</div>",
+                unsafe_allow_html=True)
+
+    # כפתורי פעולה
+    col_retry, col_prev_btn = st.columns(2)
+    with col_retry:
+        st.markdown('<div class="retry-btn">', unsafe_allow_html=True)
+        if st.button("🔄 נסה פתרון חלופי", use_container_width=True):
+            with st.spinner("מחפש פתרון חלופי..."):
+                time.sleep(1.2)
+            st.session_state.prev_result = result
+            st.session_state.opt_result  = fake_solution(seed=random.randint(1,9999))
+            st.session_state.show_previous = False
+            st.toast("✅ נמצא פתרון חלופי!")
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+    with col_prev_btn:
+        if prev:
+            tog = "🙈 הסתר פתרון קודם" if st.session_state.show_previous else "👁️ הצג פתרון קודם"
+            if st.button(tog, use_container_width=True):
+                st.session_state.show_previous = not st.session_state.show_previous
+                st.rerun()
 
-    def render_card(res, label, extra_class):
-        score_color = "#16a34a" if res["score"] >= 85 else "#d90429" if res["score"] < 75 else "#d97706"
-        st.markdown(
-            f"""<div class="solution-card {extra_class}">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:17px; font-weight:800; margin-bottom:6px;">{label}</div>
-                        <div style="color:#64748b; font-size:13px;">
-                            {res['scheduled']}/{res['total']} אימונים שובצו &nbsp;·&nbsp;
-                            {res['hard_constraints']} אילוצים קשיחים ✔️
-                            {"&nbsp;·&nbsp; ⚠️ " + str(res['warnings']) + " אזהרות" if res['warnings'] else ""}
-                        </div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="width:72px;height:72px;border-radius:50%;
-                                    border:5px solid {score_color};
-                                    display:flex;align-items:center;justify-content:center;
-                                    font-size:24px;font-weight:900;color:{score_color};">
-                            {res['score']}
-                        </div>
-                        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">ציון איכות</div>
-                    </div>
-                </div>
-            </div>""", unsafe_allow_html=True)
+    st.write("")
 
+    # כרטיסי תוצאה
     if st.session_state.show_previous and prev:
-        col_cur, col_prev = st.columns(2)
-        with col_cur:
-            render_card(result, "✅ פתרון נוכחי", "active")
-        with col_prev:
-            render_card(prev, "⏮️ פתרון קודם", "prev")
+        c1, c2 = st.columns(2)
+        with c1: render_solution_card(result, "✅ פתרון נוכחי", "active")
+        with c2: render_solution_card(prev,   "⏮️ פתרון קודם",  "prev")
     else:
-        render_card(result, "✅ פתרון מומלץ", "active")
+        render_solution_card(result, "✅ פתרון מומלץ", "active")
 
-    # Session list
+    # אימונים מתוכננים
     st.markdown("**אימונים מתוכננים:**")
     for s in result["sessions"]:
-        icon  = "⚠️" if s["warning"] else "✅"
-        warn_txt = "&nbsp;·&nbsp; <span style='color:#f59e0b;'>אזהרת שיבוץ</span>" if s["warning"] else ""
-        st.markdown(
-            f"""<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;
-                            padding:10px 16px;margin-bottom:6px;display:flex;gap:12px;align-items:center;">
-                <span style="font-size:18px;">{icon}</span>
-                <div>
-                    <div style="font-weight:700;font-size:14px;">{s['team']}</div>
-                    <div style="color:#64748b;font-size:12px;">
-                        יום {s['day']} &nbsp;·&nbsp; {s['time']} &nbsp;·&nbsp; 🏢 {s['hall']}{warn_txt}
-                    </div>
+        icon     = "⚠️" if s["warning"] else "✅"
+        warn_txt = " &nbsp;·&nbsp; <span style='color:#f59e0b;'>אזהרת שיבוץ</span>" if s["warning"] else ""
+        st.markdown(f"""
+        <div style='background:#ffffff;border:1.5px solid #e2e8f0;border-radius:10px;
+                    padding:10px 16px;margin-bottom:6px;display:flex;gap:12px;align-items:center;'>
+            <span style='font-size:18px;'>{icon}</span>
+            <div>
+                <div style='font-weight:700;font-size:14px;'>{s['team']}</div>
+                <div style='color:#64748b;font-size:12px;'>
+                    יום {s['day']} &nbsp;·&nbsp; {s['time']} &nbsp;·&nbsp; 🏢 {s['hall']}{warn_txt}
                 </div>
-            </div>""", unsafe_allow_html=True)
+            </div>
+        </div>""", unsafe_allow_html=True)
 
     st.write("---")
-
     col_confirm, col_view = st.columns(2)
     with col_confirm:
         st.markdown('<div class="confirm-btn">', unsafe_allow_html=True)
