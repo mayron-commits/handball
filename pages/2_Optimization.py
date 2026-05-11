@@ -16,10 +16,11 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap');
 * { font-family: 'Heebo', sans-serif !important; }
-.main, .stApp { background: #ffffff; direction: rtl; }
+.main, .stApp { background: #ffffff; direction: rtl; text-align: right; }
+[data-testid="stSidebarNav"] { direction: rtl; }
 [data-testid="stAppViewContainer"] { background: #ffffff; }
 [data-testid="stHeader"] { background: #ffffff; }
-.block-container { max-width: 780px !important; margin: auto !important; padding-top: 1.5rem !important; }
+.block-container { max-width: 700px !important; margin: auto !important; padding-top: 2rem !important; }
 
 /* ── כפתורי ניווט ── */
 .stButton > button {
