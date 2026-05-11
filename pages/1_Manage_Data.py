@@ -6,6 +6,7 @@ import streamlit as st
 import os
 from sections.shared import inject_css, top_nav
 from sections import teams as teams_section
+from sections import coaches as coaches_section
 
 st.set_page_config(
     page_title="ניהול נתונים – הפועל ראשון לציון",
@@ -52,9 +53,7 @@ if section == "teams_management":
 
 # ── מאמנים ───────────────────────────────────────────────────────────
 elif section == "coaches_management":
-    # יושם בקובץ sections/coaches.py בשלב הבא
-    top_nav("ניהול נתונים", "overview")
-    st.info("מסך מאמנים – יועבר לקובץ נפרד בקרוב")
+    coaches_section.render()
 
 # ── אולמות ───────────────────────────────────────────────────────────
 elif section == "halls_management":
