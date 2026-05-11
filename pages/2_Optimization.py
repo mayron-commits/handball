@@ -1,10 +1,10 @@
 """
 pages/2_Optimization.py
-מנוע אופטימיזציה – Add Constraints / Upload Match Schedule / Run Optimization
+מנוע אופטימיזציה – הוספת אילוצים / Upload Match Schedule / Run Optimization
 """
 import streamlit as st
 import time, random, os
-from sections.db_data import TEAMS_DB, COACHES_DB, HALLS_DB, COACH_NAMES, HALL_NAMES, TEAM_NAMES
+from sections.db_data import קבוצהS_DB, מאמןES_DB, אולםS_DB, מאמן_NAMES, אולם_NAMES, קבוצה_NAMES
 
 st.set_page_config(
     page_title="מנוע אופטימיזציה – הפועל ראשון לציון",
@@ -195,14 +195,14 @@ if st.session_state.opt_sub == "main":
 
     st.markdown("""
         <div style='text-align:center;margin-bottom:40px;'>
-            <div style='font-size:22px;font-weight:400;color:#64748b;letter-spacing:2px;'>OPTIMIZATION</div>
-            <div style='font-size:36px;font-weight:900;color:#0f172a;'>ENGINE</div>
+            <div style='font-size:22px;font-weight:400;color:#64748b;letter-spacing:2px;'>אופטימיזציה</div>
+            <div style='font-size:36px;font-weight:900;color:#0f172a;'>מנוע השיבוץ</div>
         </div>
     """, unsafe_allow_html=True)
 
     # כפתור 1 – הוספת אילוצים
     st.markdown('<div class="action-btn">', unsafe_allow_html=True)
-    if st.button("ADD CONSTRAINTS  ≡", use_container_width=True, key="btn_constraints"):
+    if st.button("הוספת אילוצים  ≡", use_container_width=True, key="btn_constraints"):
         st.session_state.opt_sub = "constraints"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -210,7 +210,7 @@ if st.session_state.opt_sub == "main":
 
     # כפתור 2 – העלאת לוח משחקים
     st.markdown('<div class="action-btn">', unsafe_allow_html=True)
-    if st.button("UPLOAD MATCH SCHEDULE  ↑", use_container_width=True, key="btn_upload"):
+    if st.button("העלאת לוח משחקים  ↑", use_container_width=True, key="btn_upload"):
         st.session_state.opt_sub = "upload"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -218,7 +218,7 @@ if st.session_state.opt_sub == "main":
 
     # כפתור 3 – הרצת אופטימיזציה
     st.markdown('<div class="run-btn">', unsafe_allow_html=True)
-    run_clicked = st.button("RUN OPTIMIZATION  ▶", use_container_width=True, key="btn_run")
+    run_clicked = st.button("RUN אופטימיזציה  ▶", use_container_width=True, key="btn_run")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
@@ -266,7 +266,7 @@ elif st.session_state.opt_sub == "constraints":
     st.markdown("""
         <div style='display:flex;align-items:center;gap:10px;margin-bottom:4px;'>
             <span style='font-size:22px;'>🔒</span>
-            <span style='font-size:28px;font-weight:900;color:#0f172a;'>Add Constraints</span>
+            <span style='font-size:28px;font-weight:900;color:#0f172a;'>הוספת אילוצים</span>
         </div>
         <div style='font-size:14px;color:#94a3b8;margin-bottom:24px;'>
             צור תקופות חסימה לקבוצות, אולמות או מאמנים
@@ -278,49 +278,49 @@ elif st.session_state.opt_sub == "constraints":
     # ── טופס ─────────────────────────────────────────────────────────
     with col_form:
         with st.container(border=True):
-            st.markdown("**＋ New Constraint**")
+            st.markdown("**＋ אילוץ חדש**")
             st.write("")
 
-            # Entity Type – 3 כפתורים
-            entity_type = st.radio("סוג ישות", ["Team", "Hall", "Coach"],
+            # סוג ישות – 3 כפתורים
+            entity_type = st.radio("סוג ישות", ["קבוצה", "אולם", "מאמן"],
                                     horizontal=True, label_visibility="collapsed")
             st.write("")
 
             # בחירה דינמית
-            if entity_type == "Team":
-                st.markdown("<div class='form-lbl'>Select Team</div>", unsafe_allow_html=True)
-                team_opts = ["Choose..."] + [t["name"] for t in TEAMS_DB if t["active"]]
-                entity_name = st.selectbox("Team", team_opts, label_visibility="collapsed")
-            elif entity_type == "Hall":
-                st.markdown("<div class='form-lbl'>Select Hall</div>", unsafe_allow_html=True)
-                hall_opts = ["Choose..."] + [h["name"] for h in HALLS_DB]
-                entity_name = st.selectbox("Hall", hall_opts, label_visibility="collapsed")
+            if entity_type == "קבוצה":
+                st.markdown("<div class='form-lbl'>בחר קבוצה</div>", unsafe_allow_html=True)
+                team_opts = ["בחר..."] + [t["name"] for t in קבוצהS_DB if t["active"]]
+                entity_name = st.selectbox("קבוצה", team_opts, label_visibility="collapsed")
+            elif entity_type == "אולם":
+                st.markdown("<div class='form-lbl'>בחר אולם</div>", unsafe_allow_html=True)
+                hall_opts = ["בחר..."] + [h["name"] for h in אולםS_DB]
+                entity_name = st.selectbox("אולם", hall_opts, label_visibility="collapsed")
             else:
-                st.markdown("<div class='form-lbl'>Select Coach</div>", unsafe_allow_html=True)
-                coach_opts = ["Choose..."] + list(COACH_NAMES.values())
-                entity_name = st.selectbox("Coach", coach_opts, label_visibility="collapsed")
+                st.markdown("<div class='form-lbl'>בחר מאמן</div>", unsafe_allow_html=True)
+                coach_opts = ["בחר..."] + list(מאמן_NAMES.values())
+                entity_name = st.selectbox("מאמן", coach_opts, label_visibility="collapsed")
 
-            st.markdown("<div class='form-lbl'>Date</div>", unsafe_allow_html=True)
-            c_date = st.date_input("Date", label_visibility="collapsed")
+            st.markdown("<div class='form-lbl'>תאריך</div>", unsafe_allow_html=True)
+            c_date = st.date_input("תאריך", label_visibility="collapsed")
 
             col_ts, col_te = st.columns(2)
             with col_ts:
-                st.markdown("<div class='form-lbl'>From Time</div>", unsafe_allow_html=True)
-                time_opts = ["Select..."] + [f"{h:02d}:00" for h in range(6, 23)]
+                st.markdown("<div class='form-lbl'>משעה</div>", unsafe_allow_html=True)
+                time_opts = ["בחר שעה..."] + [f"{h:02d}:00" for h in range(6, 23)]
                 from_time = st.selectbox("From", time_opts, label_visibility="collapsed")
             with col_te:
-                st.markdown("<div class='form-lbl'>To Time</div>", unsafe_allow_html=True)
+                st.markdown("<div class='form-lbl'>עד שעה</div>", unsafe_allow_html=True)
                 to_time = st.selectbox("To", time_opts, label_visibility="collapsed", key="to_time")
 
-            st.markdown("<div class='form-lbl'>Reason</div>", unsafe_allow_html=True)
-            reason = st.text_input("Reason",
-                                   placeholder="e.g., Match, Training blocked, Hall maintenance",
+            st.markdown("<div class='form-lbl'>סיבה</div>", unsafe_allow_html=True)
+            reason = st.text_input("סיבה",
+                                   placeholder="למשל: משחק, טיול שנתי, שיפוץ",
                                    label_visibility="collapsed")
 
             st.write("")
             st.markdown('<div class="save-sm">', unsafe_allow_html=True)
-            if st.button("＋ Add to Queue", use_container_width=True, key="add_constraint"):
-                if entity_name != "Choose..." and from_time != "Select..." and to_time != "Select...":
+            if st.button("＋ הוסף לתור", use_container_width=True, key="add_constraint"):
+                if entity_name != "בחר..." and from_time != "בחר שעה..." and to_time != "בחר שעה...":
                     st.session_state.constraints.append({
                         "type": entity_type, "entity": entity_name,
                         "date": str(c_date),
@@ -340,7 +340,7 @@ elif st.session_state.opt_sub == "constraints":
         st.markdown(
             f"<div style='display:flex;align-items:center;gap:8px;margin-bottom:16px;'>"
             f"<span style='color:#d90429;font-size:18px;'>📅</span>"
-            f"<span style='font-size:18px;font-weight:800;'>Constraint Queue ({n})</span>"
+            f"<span style='font-size:18px;font-weight:800;'>תור אילוצים ({n})</span>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -349,12 +349,12 @@ elif st.session_state.opt_sub == "constraints":
             st.markdown("""
                 <div style='text-align:center;padding:40px 20px;color:#94a3b8;'>
                     <div style='font-size:40px;margin-bottom:12px;'>🔒</div>
-                    <div style='font-weight:600;'>No constraints added yet</div>
-                    <div style='font-size:13px;'>Use the form to add constraints</div>
+                    <div style='font-weight:600;'>אין אילוצים בתור עדיין</div>
+                    <div style='font-size:13px;'>השתמש בטופס כדי להוסיף אילוצים</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            color_map = {"Team": "#3B82F6", "Hall": "#A855F7", "Coach": "#22C55E"}
+            color_map = {"קבוצה": "#3B82F6", "אולם": "#A855F7", "מאמן": "#22C55E"}
             for i, c in enumerate(constraints):
                 color = color_map.get(c["type"], "#d90429")
                 col_c, col_x = st.columns([10, 1])
@@ -387,14 +387,14 @@ elif st.session_state.opt_sub == "constraints":
             col_submit, col_clear = st.columns(2)
             with col_submit:
                 st.markdown('<div class="save-sm">', unsafe_allow_html=True)
-                if st.button("Submit All", use_container_width=True):
+                if st.button("שלח הכל", use_container_width=True):
                     st.success(f"✅ {n} אילוצים נשלחו!")
                     st.session_state.opt_sub = "main"
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
             with col_clear:
                 st.markdown('<div class="cancel-sm">', unsafe_allow_html=True)
-                if st.button("Clear All", use_container_width=True):
+                if st.button("נקה הכל", use_container_width=True):
                     st.session_state.constraints = []
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -407,7 +407,7 @@ elif st.session_state.opt_sub == "upload":
 
     st.markdown("""
         <div style='font-size:22px;font-weight:900;color:#0f172a;margin-bottom:4px;'>
-            Import & Sync Dashboard
+            ייבוא וסנכרון לוח משחקים
         </div>
         <div style='font-size:14px;color:#94a3b8;margin-bottom:24px;'>
             העלה לוח משחקים של הליגה וצור חסימות אוטומטיות
@@ -419,10 +419,10 @@ elif st.session_state.opt_sub == "upload":
         <div class='drop-zone'>
             <div style='font-size:48px;color:#cbd5e1;margin-bottom:16px;'>📄</div>
             <div style='font-size:18px;font-weight:700;color:#0f172a;margin-bottom:8px;'>
-                Upload League Match Schedule
+                העלאת לוח משחקים של הליגה
             </div>
             <div style='font-size:14px;color:#64748b;'>
-                Drag and drop your CSV or Excel file here
+                גרור ושחרר קובץ CSV או Excel לכאן
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -436,8 +436,8 @@ elif st.session_state.opt_sub == "upload":
 
     st.markdown("""
         <div style='font-size:12px;color:#94a3b8;margin-top:12px;'>
-            Supported formats: CSV, Excel (.xlsx, .xls)<br>
-            Expected columns: Date, Time, League, Hall, Home Team, Away Team
+            פורמטים נתמכים: CSV, Excel (.xlsx, .xls)<br>
+            עמודות נדרשות: תאריך, שעה, ליגה, אולם, קבוצת בית, קבוצת חוץ
         </div>
     """, unsafe_allow_html=True)
 
