@@ -18,7 +18,7 @@ DEFAULT_AVAIL = {
     for d in DAYS_HE
 }
 
-DEFAULT_COACHES = [
+DEFAULT_מאמןES = [
     {"name": "יוסי כהן",  "role": "מאמן ראשי",   "email": "yossi@hapoel.com",  "phone": "050-111-2233", "avail": DEFAULT_AVAIL},
     {"name": "מיכל לוי",  "role": "מאמנת ראשית", "email": "michal@hapoel.com",  "phone": "050-222-3344", "avail": DEFAULT_AVAIL},
     {"name": "דני אברהם", "role": "עוזר מאמן",   "email": "danny@hapoel.com",   "phone": "050-333-4455", "avail": DEFAULT_AVAIL},
@@ -29,7 +29,7 @@ DEFAULT_COACHES = [
 
 def init_state():
     for k, v in {
-        "coaches":          DEFAULT_COACHES,
+        "coaches":          DEFAULT_מאמןES,
         "show_add_coach":   False,
         "edit_coach_idx":   None,
         "avail_coach_idx":  None,
