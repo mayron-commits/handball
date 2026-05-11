@@ -7,6 +7,9 @@ import os
 from sections.shared import inject_css, top_nav
 from sections import teams as teams_section
 from sections import coaches as coaches_section
+from sections import players as players_section
+from sections import managers as managers_section
+from sections.db_data import HALLS_DB, TEAMS_DB, COACHES_DB, COACH_NAMES, HALL_NAMES, TEAM_NAMES
 
 st.set_page_config(
     page_title="ניהול נתונים – הפועל ראשון לציון",
@@ -132,32 +135,11 @@ elif section == "halls_management":
 
 # ── שחקנים ───────────────────────────────────────────────────────────
 elif section == "players_management":
-    top_nav("ניהול נתונים", "overview")
-    st.markdown("<div class='page-title-lg'>ניהול <span style='font-weight:900'>שחקנים</span></div><div class='page-sub'>421 שחקנים ושחקניות רשומים</div>", unsafe_allow_html=True)
-    st.write("")
-    c1, c2 = st.columns(2)
-    with c1: st.text_input("🔍 חיפוש לפי שם")
-    with c2: st.selectbox("סנן לפי קבוצה", ["הכל","בוגרים","נוער","ילדים"])
-    st.info("רשימת השחקנים תוצג לאחר חיבור לבסיס הנתונים בשלב ב׳")
+    players_section.render()
 
 # ── מנהלים ───────────────────────────────────────────────────────────
 elif section == "managers_management":
-    top_nav("ניהול נתונים", "overview")
-    st.markdown("<div class='page-title-lg'>ניהול <span style='font-weight:900'>מנהלים</span></div><div class='page-sub'>מנהלי קבוצות ואחראים</div>", unsafe_allow_html=True)
-    st.write("")
-    managers = [
-        {"name":"אבי פרידמן","team":"בוגרים גברים א׳"},
-        {"name":"רות שמיר","team":"בוגרות נשים א׳"},
-        {"name":"נועם כץ","team":"נערים א׳ צפון"},
-        {"name":"ליאת בן דוד","team":"נערות א׳"},
-    ]
-    for m in managers:
-        st.markdown(f"""<div class='data-card' style='border-right:5px solid #a16207;'>
-            <div style='font-size:16px;font-weight:800;color:#0f172a;'>{m['name']}</div>
-            <div style='font-size:13px;color:#64748b;margin-top:3px;'>אחראי: {m['team']}</div>
-        </div>""", unsafe_allow_html=True)
-    if st.button("＋ הוסף מנהל", use_container_width=True):
-        st.info("יושם בשלב ב׳")
+    managers_section.render()
 
 # ════════════════════════════════════════════════════════════════════
 # מסך סקירה כללית – ברירת מחדל
