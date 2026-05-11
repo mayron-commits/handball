@@ -100,8 +100,17 @@ def _coach_form(title, data, save_key, cancel_key):
 
 # ── מסך זמינות שבועית ────────────────────────────────────────────────────────
 def _render_availability():
-    idx   = st.session_state.avail_coach_idx
-    coach = st.session_state.coaches[idx]
+    idx = st.session_state.avail_coach_idx
+    coaches = st.session_state.coaches
+
+    # בדיקת תקינות – אם idx לא תקין נחזור לרשימה
+    if idx is None or idx >= len(coaches):
+        st.session_state.coaches_sub = "list"
+        st.session_state.avail_coach_idx = None
+        st.rerun()
+        return
+
+    coach = coaches[idx]
 
     # ניווט
     col_home, col_back, col_space, col_logo = st.columns([1.2, 2.5, 4.5, 0.8])
