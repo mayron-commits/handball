@@ -179,39 +179,37 @@ if st.session_state.opt_sub == "main":
             st.markdown("<div style='text-align:center;font-size:32px;'>🤾</div>", unsafe_allow_html=True)
     st.markdown("<hr class='div'>", unsafe_allow_html=True)
 
-    # ── לוגו גדול + כותרות ────────────────────────────────────────
-    col_a, col_b, col_c = st.columns([1.5, 1, 1.5])
-    with col_b:
-        if os.path.exists("logo.png"):
-            st.image("logo.png", use_container_width=True)
-        else:
-            st.markdown("<div style='text-align:center;font-size:80px;'>🤾</div>", unsafe_allow_html=True)
-
-    # כותרות
+    # כותרות בלבד (בלי לוגו כפול)
     st.markdown(
         "<div class='home-title-sub'>הפועל ראשון לציון</div>"
         "<div class='home-title-main'>יצירת לוח אימונים</div>",
         unsafe_allow_html=True,
     )
 
-    # ── עיצוב כפתורים ──
+    # ── עיצוב כפתורים: לבן / אדום / כהה ──
     st.markdown("""
     <style>
-    div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button {
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(2) > button {
         background: #ffffff !important; color: #0f172a !important;
         border: 2px solid #e2e8f0 !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
     }
-    div[data-testid="stVerticalBlock"] > div:nth-child(4) .stButton > button:hover {
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(2) > button:hover {
         border-color: #d90429 !important; color: #d90429 !important;
     }
-    div[data-testid="stVerticalBlock"] > div:nth-child(5) .stButton > button {
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(3) > button {
         background: #d90429 !important; color: #ffffff !important;
         border: none !important; box-shadow: 0 4px 20px rgba(217,4,41,0.35) !important;
     }
-    div[data-testid="stVerticalBlock"] > div:nth-child(6) .stButton > button {
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(3) > button:hover {
+        background: #b80222 !important;
+    }
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(4) > button {
         background: #0f172a !important; color: #ffffff !important;
         border: none !important; box-shadow: 0 4px 14px rgba(0,0,0,0.2) !important;
+    }
+    div[data-testid="stVerticalBlock"] .stButton:nth-of-type(4) > button:hover {
+        background: #1e293b !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -226,13 +224,6 @@ if st.session_state.opt_sub == "main":
     if st.button("↑   העלאת לוח משחקים", use_container_width=True, key="btn_u"):
         st.session_state.opt_sub = "upload"
         st.rerun()
-
-    # כפתור חזרה לבית
-    st.write("")
-    col_center, _, _ = st.columns([1, 1, 1])
-    with col_center:
-        if st.button("🏠 חזרה לדף הבית", use_container_width=True, key="btn_home_main"):
-            st.switch_page("app.py")
 
     # הרצה
     if run_clicked:
