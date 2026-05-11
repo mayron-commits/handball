@@ -140,20 +140,25 @@ def fake_solution(seed=None):
     }
 
 
-def inner_nav(back_label="← חזרה"):
-    """ניווט פנימי – רק כשנמצאים בתת-מסך"""
+def inner_nav(back_label="← חזרה", back_key="inner_back"):
+    """header אחיד – כפתור בית מימין, לוגו משמאל"""
     col_home, col_back, col_space, col_logo = st.columns([1.2, 1.8, 5.2, 0.8])
     with col_home:
-        if st.button("🏠 בית", key="inner_home"):
+        if st.button("🏠 בית", key=f"inner_home_{back_key}"):
             st.session_state.opt_sub = "main"
             st.switch_page("app.py")
     with col_back:
-        if st.button(back_label, key="inner_back"):
+        if st.button(back_label, key=back_key):
             st.session_state.opt_sub = "main"
             st.rerun()
     with col_logo:
         if os.path.exists("logo.png"):
             st.image("logo.png", width=55)
+        else:
+            st.markdown(
+                "<div style='text-align:center;font-size:32px;'>🤾</div>",
+                unsafe_allow_html=True,
+            )
     st.markdown("<hr class='div'>", unsafe_allow_html=True)
 
 
@@ -162,7 +167,19 @@ def inner_nav(back_label="← חזרה"):
 # ════════════════════════════════════════════════════════════════════
 if st.session_state.opt_sub == "main":
 
-    # לוגו
+    # ── header אחיד ──────────────────────────────────────────────
+    col_home, col_space, col_logo = st.columns([1.2, 7, 0.8])
+    with col_home:
+        if st.button("🏠 בית", key="main_home"):
+            st.switch_page("app.py")
+    with col_logo:
+        if os.path.exists("logo.png"):
+            st.image("logo.png", width=55)
+        else:
+            st.markdown("<div style='text-align:center;font-size:32px;'>🤾</div>", unsafe_allow_html=True)
+    st.markdown("<hr class='div'>", unsafe_allow_html=True)
+
+    # ── לוגו גדול + כותרות ────────────────────────────────────────
     col_a, col_b, col_c = st.columns([1.5, 1, 1.5])
     with col_b:
         if os.path.exists("logo.png"):
@@ -252,7 +269,7 @@ if st.session_state.opt_sub == "main":
 # מסך הוספת אילוצים
 # ════════════════════════════════════════════════════════════════════
 elif st.session_state.opt_sub == "constraints":
-    inner_nav()
+    inner_nav(back_key='back_constraints')
 
     st.markdown(
         "<div style='font-size:28px;font-weight:900;color:#0f172a;margin-bottom:4px;'>🔒 הוספת אילוצים</div>"
@@ -375,7 +392,7 @@ elif st.session_state.opt_sub == "constraints":
 # מסך העלאת לוח משחקים
 # ════════════════════════════════════════════════════════════════════
 elif st.session_state.opt_sub == "upload":
-    inner_nav()
+    inner_nav(back_key='back_upload')
 
     st.markdown(
         "<div style='font-size:28px;font-weight:900;color:#0f172a;margin-bottom:4px;'>ייבוא וסנכרון לוח משחקים</div>"
@@ -427,7 +444,7 @@ elif st.session_state.opt_sub == "upload":
 # מסך תוצאות
 # ════════════════════════════════════════════════════════════════════
 elif st.session_state.opt_sub == "results":
-    inner_nav()
+    inner_nav(back_key='back_results')
 
     result = st.session_state.opt_result
     prev   = st.session_state.prev_result
